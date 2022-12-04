@@ -1,0 +1,13 @@
+build:
+  planner:
+    context: .
+
+deploy:
+  - helm upgrade --install planner chart
+    --set planner.image=${OKTETO_BUILD_PLANNER_IMAGE}
+
+dev:
+  planner:
+    command: ["flask", "--app", "flaskr", "run"]
+    sync:
+      - .:/app

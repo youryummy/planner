@@ -1,0 +1,3 @@
+planner:
+  replicaCount: 1
+  databaseUrl: https://planner-aa327-default-rtdb.europe-west1.firebasedatabase.app/

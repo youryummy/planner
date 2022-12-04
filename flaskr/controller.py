@@ -6,7 +6,7 @@ bp = Blueprint('planner', __name__)
 @bp.route('/events', methods=['GET', 'POST', 'PUT'])
 def event():
     # username = request.cookies.get('username')
-    username = 'user2'
+    username = 'user1'
     if request.method == 'POST':
         body = request.get_json()
         service.create_event(username, body)

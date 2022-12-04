@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: planner
+  labels:
+    {{- include "planner.labels" . | nindent 4 }}
+    app.kubernetes.io/component: planner
+spec:
+  replicas: {{ .Values.planner.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: planner
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: planner
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+        - name: planner
+          image: {{ .Values.planner.image }}
+          env:
+            - name: DATABASE_URL
+              value: {{ .Values.planner.databaseUrl }}
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 1
+            httpGet:
+              path: /
+              port: 5000
+          livenessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 1
+            httpGet:
+              path: /
+              port: 5000
