@@ -1,0 +1,183 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+      "version": "1.0.0",
+      "title": "Planner Service",
+      "description": "YourYummy user planner service"
+    },
+    "paths": {
+      "/api/v1/events": {
+        "get": {
+          "description": "Returns events by user",
+          "operationId": "findByUser",
+          "responses": {
+            "200": {
+              "description": "Events found by user",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/event"
+                    }
+                  }
+                }
+              }
+            },
+            "default": {
+              "description": "Unexpected error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/error"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "description": "Creates a new event",
+          "operationId": "addEvent",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/event"
+                }
+              }
+            },
+            "description": "Event to be created",
+            "required": true
+          },
+          "responses": {
+            "201": {
+              "description": "Event"
+            },
+            "default": {
+              "description": "Unexpected error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/error"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "put": {
+          "description": "Update a event based on its id",
+          "operationId": "updateEvent",
+          "parameters": [
+            {
+              "required": true,
+              "name": "id",
+              "description": "id of the event to update",
+              "in": "path",
+              "schema": {
+                "type": "number"
+              }
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/event"
+                }
+              }
+            },
+            "description": "Event to be updated",
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Event updated"
+            },
+            "default": {
+              "description": "Unexpected error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/v1/events/{id}": {
+        "delete": {
+          "description": "Deletes a single event based on its id",
+          "operationId": "deleteEvent",
+          "parameters": [
+            {
+              "required": true,
+              "name": "id",
+              "description": "id of the event to delete",
+              "in": "path",
+              "schema": {
+                "type": "number"
+              }
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "Event deleted"
+            },
+            "default": {
+              "description": "Unexpected error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "event": {
+          "type": "object",
+          "required": [
+            "id"
+          ],
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "timestamp": {
+              "type": "string"
+            },
+            "sync": {
+              "type": "boolean"
+            },
+            "account": {
+              "type": "string"
+            },
+            "recipe": {
+              "type": "number"
+            }
+          }
+        },
+        "error": {
+          "type": "object",
+          "required": [
+            "message"
+          ],
+          "properties": {
+            "message": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        }
+      }
+    }
+  }

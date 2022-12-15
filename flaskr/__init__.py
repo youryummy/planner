@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from . import controller
 
 def create_app(test_config=None):
@@ -9,7 +9,11 @@ def create_app(test_config=None):
     app.register_blueprint(controller.bp, url_prefix='/api/v1')
 
     @app.route('/')
-    def check():
+    def health_check():
         return 'The Planner API is running!'
+
+    @app.route('/docs/<path:path>')
+    def swagger_schema(path):
+        return send_from_directory('public_docs', path)
 
     return app
