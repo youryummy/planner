@@ -5,6 +5,7 @@ build:
 deploy:
   - helm upgrade --install planner chart
     --set planner.image=${OKTETO_BUILD_PLANNER_IMAGE}
+    --set planner.databaseUrl=${DATABASE_URL}
 
 dev:
   planner:

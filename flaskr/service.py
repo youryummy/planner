@@ -6,6 +6,7 @@ import uuid
 
 load_dotenv()
 database_url = os.getenv('DATABASE_URL')
+print(os.environ)
 firebase = firebase.FirebaseApplication(database_url, None)
 
 def get_firebase_events(username):

@@ -11,6 +11,7 @@ spec:
     app.kubernetes.io/name: planner
     app.kubernetes.io/instance: {{ .Release.Name }}
   type: ClusterIP
+  clusteringIP: None
   ports:
     - name: http
       port: 5000
