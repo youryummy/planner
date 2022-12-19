@@ -2,18 +2,17 @@ apiVersion: v1
 kind: Service
 metadata:
   name: planner
-  labels:
-    {{- include "planner.labels" . | nindent 4 }}
+  labels: { { - include "planner.labels" . | nindent 4 } }
   annotations:
     dev.okteto.com/auto-ingress: "true"
 spec:
   selector:
     app.kubernetes.io/name: planner
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/instance: { { .Release.Name } }
   type: ClusterIP
+  clsuterIP: 10.152.1.5
   ports:
     - name: http
       port: 5000
       targetPort: 5000
       protocol: TCP
-  
