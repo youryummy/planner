@@ -10,7 +10,7 @@ spec:
     app.kubernetes.io/name: planner
     app.kubernetes.io/instance: { { .Release.Name } }
   type: ClusterIP
-  clsuterIP: 10.152.1.5
+  clusterIP: 10.152.1.5
   ports:
     - name: http
       port: 5000
