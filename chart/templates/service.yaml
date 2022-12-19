@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: planner
   labels:
-    {{ - include "planner.labels" . | nindent 4 }}
+    {{- include "planner.labels" . | nindent 4 }}
   annotations:
     dev.okteto.com/auto-ingress: "true"
 spec:
