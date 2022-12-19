@@ -10,7 +10,7 @@ spec:
   selector:
     app.kubernetes.io/name: planner
     app.kubernetes.io/instance: {{ .Release.Name }}
-  clusterIP: 10.152.1.5
+  clusterIP: 10.152.0.5
   ports:
     - name: http
       port: 5000
