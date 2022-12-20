@@ -26,17 +26,17 @@ spec:
               value: {{ .Values.planner.databaseUrl }}
           ports:
             - name: http
-              containerPort: 5000
+              containerPort: 80
               protocol: TCP
           readinessProbe:
             initialDelaySeconds: 10
             periodSeconds: 1
             httpGet:
               path: /
-              port: 5000
+              port: 80
           livenessProbe:
             initialDelaySeconds: 10
             periodSeconds: 1
             httpGet:
               path: /
-              port: 5000
+              port: 80
