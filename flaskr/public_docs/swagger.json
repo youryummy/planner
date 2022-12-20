@@ -150,19 +150,19 @@
           ],
           "properties": {
             "id": {
-              "type": "number"
+              "type": "string"
             },
             "timestamp": {
               "type": "string"
             },
-            "sync": {
+            "synced": {
               "type": "boolean"
             },
             "account": {
               "type": "string"
             },
             "recipe": {
-              "type": "number"
+              "type": "object"
             }
           }
         },

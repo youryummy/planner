@@ -50,18 +50,18 @@ def get_events(username):
     for event in my_events:
         # detailed_recipe = utils.communicate('GET', "".join(['http://localhost:5001/api/v1/recipes/', event['recipe']]), None, username)
         detailed_recipe = {
-            "id": 1,
+            "id": "1",
             "name": "recipe1",
             "description": "recipe1 description",
             "tags": ["tag1","tag2"],
             "ingredients": [
                 {
-                    "id": 1,
+                    "id": "1",
                     "name": "ingredient1",
                     "quantity": 1,
                 },
                 {
-                    "id": 2,
+                    "id": "2",
                     "name": "ingredient2",
                     "quantity": 2,
                 }
