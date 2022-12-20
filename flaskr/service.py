@@ -8,6 +8,7 @@ load_dotenv()
 database_url = os.getenv('DATABASE_URL')
 firebase = firebase.FirebaseApplication(database_url, None)
 
+
 def get_firebase_events(username):
     events = firebase.get('/events', None)
     events_id = None
@@ -19,6 +20,7 @@ def get_firebase_events(username):
     if username not in events:
         events[username] = []
     return events, events_id
+
 
 def create_event(username, body):
     events, events_id = get_firebase_events(username)
@@ -43,6 +45,7 @@ def create_event(username, body):
     else:
         firebase.put('/events', events_id, events)
 
+
 def get_events(username):
     events, _ = get_firebase_events(username)
     my_events = events[username]
@@ -53,7 +56,7 @@ def get_events(username):
             "id": "1",
             "name": "recipe1",
             "description": "recipe1 description",
-            "tags": ["tag1","tag2"],
+            "tags": ["tag1", "tag2"],
             "ingredients": [
                 {
                     "id": "1",
@@ -76,19 +79,21 @@ def get_events(username):
         detailed_events.append(detailed_event)
     return detailed_events
 
+
 def update_event(username, modified_event):
     events, events_id = get_firebase_events(username)
     my_events = events[username]
     for event in my_events:
-        if event['id'] == modified_event['id']:
-            if modified_event['synced']:
+        if event is not None and event['id'] == modified_event['id']:
+            if 'timestamp' in modified_event:
+                event['timestamp'] = modified_event['timestamp']
+            if 'synced' in modified_event:
                 # communicate with Google Calendar API
-                pass
-            event['synced'] = modified_event['synced']
-            event['timestamp'] = modified_event['timestamp']
+                event['synced'] = modified_event['synced']
             break
     events[username] = my_events
     firebase.put('/events', events_id, events)
+
 
 def delete_event(username, id):
     events, events_id = get_firebase_events(username)
