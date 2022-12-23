@@ -134,9 +134,7 @@
     "schemas": {
       "event": {
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string"
@@ -157,10 +155,7 @@
       },
       "create-event": {
         "type": "object",
-        "required": [
-          "id",
-          "timestamp"
-        ],
+        "required": ["id", "timestamp"],
         "properties": {
           "id": {
             "type": "string"
@@ -172,9 +167,7 @@
       },
       "modify-event": {
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "properties": {
           "id": {
             "type": "string"
@@ -189,15 +182,23 @@
       },
       "error": {
         "type": "object",
-        "required": [
-          "message"
-        ],
+        "required": ["message"],
         "properties": {
           "message": {
             "type": "string"
           }
         },
         "additionalProperties": true
+      }
+    },
+    "securitySchemes": {
+      "apikey": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "x-acl-config": {
+          "$ref": "./acl-config.yaml"
+        }
       }
     }
   }

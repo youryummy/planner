@@ -17,6 +17,6 @@ def create_app(test_config=None):
 
     @app.route('/docs/<path:path>')
     def swagger_schema(path):
-        return send_from_directory('public_docs', path)
+        return send_from_directory('api', path)
 
     return app
