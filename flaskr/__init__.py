@@ -1,5 +1,8 @@
 from flask import Flask, send_from_directory
 from . import controller
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)

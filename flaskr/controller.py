@@ -1,12 +1,22 @@
 from flask import Blueprint, request, Response
+from dotenv import load_dotenv
 from . import service
+import logging
+import jwt
+import os
 
 bp = Blueprint('planner', __name__)
+logger = logging.getLogger(__name__)
+load_dotenv()
+JWT_SECRET = os.getenv('JWT_SECRET')
 
 @bp.route('/events', methods=['GET', 'POST', 'PUT'])
 def event():
-    # username = request.cookies.get('username')
-    username = 'user1'
+    auth_token = request.cookies.get('authToken')
+    encoded_jwt = jwt.decode(auth_token, JWT_SECRET, algorithms=['HS256'])
+    username = encoded_jwt['username']
+    logger.info(f'Processing request for user {username}')
+
     if request.method == 'POST':
         body = request.get_json()
         service.create_event(username, body)
@@ -22,7 +32,9 @@ def event():
 
 @bp.route('/events/<id>', methods=['DELETE'])
 def delete_event(id):
-    # username = request.cookies.get('username')
-    username = 'user2'
+    auth_token = request.cookies.get('authToken')
+    encoded_jwt = jwt.decode(auth_token, JWT_SECRET, algorithms=['HS256'])
+    username = encoded_jwt['username']
+
     service.delete_event(username, id)
     return Response(None, status=204)
