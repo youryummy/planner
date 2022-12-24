@@ -3,11 +3,16 @@ from firebase import firebase
 import os
 from . import utils
 import uuid
+import os.path
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+import logging
 
 load_dotenv()
 database_url = os.getenv('DATABASE_URL')
 firebase = firebase.FirebaseApplication(database_url, None)
 
+logger = logging.getLogger(__name__)
 
 def get_firebase_events(username):
     events = firebase.get('/events', None)
@@ -47,6 +52,7 @@ def create_event(username, body):
 
 
 def get_events(username):
+    # check data before upload to firebase
     events, _ = get_firebase_events(username)
     my_events = events[username]
     detailed_events = []
@@ -81,6 +87,7 @@ def get_events(username):
 
 
 def update_event(username, modified_event):
+    # check data before upload to firebase
     events, events_id = get_firebase_events(username)
     my_events = events[username]
     for event in my_events:
@@ -88,7 +95,7 @@ def update_event(username, modified_event):
             if 'timestamp' in modified_event:
                 event['timestamp'] = modified_event['timestamp']
             if 'synced' in modified_event:
-                # communicate with Google Calendar API
+                sync_with_google_calendar(username, modified_event)
                 event['synced'] = modified_event['synced']
             break
     events[username] = my_events
@@ -104,3 +111,36 @@ def delete_event(username, id):
             break
     events[username] = my_events
     firebase.put('/events', events_id, events)
+
+def sync_with_google_calendar(username, event):
+    SCOPE= ['https://www.googleapis.com/auth/calendar']
+
+    credentials = {
+        "token": event['accessToken'],
+        "refresh_token": event['refreshToken'],
+        "client_id": os.getenv('CLIENT_ID'),
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "client_secret": os.getenv('CLIENT_SECRET'),
+        "scopes": SCOPE
+    }
+    creds = Credentials.from_authorized_user_info(credentials, SCOPE)
+    service = build('calendar', 'v3', credentials=creds)
+    
+    # TODO: call recipes api
+    event = {
+        'summary': 'Google I/O 2015',
+        'location': '800 Howard St., San Francisco, CA 94103',
+        'description': 'A chance to hear more about Google\'s developer products.',
+        'start': {
+            'dateTime': '2021-05-28T09:00:00-07:00',
+            'timeZone': 'America/Los_Angeles',
+        },
+        'end': {
+            'dateTime': '2021-05-28T17:00:00-07:00',
+            'timeZone': 'America/Los_Angeles',
+        }
+    }
+
+    event = service.events().insert(calendarId='primary', body=event).execute()
+    logger.info('Event created: %s' % (event.get('htmlLink')))
+    

@@ -3,12 +3,12 @@ user:
     "read:own": ["*"]
     "create:own": ["*"]
     "update:own": ["*"]
-  api/v1/events/{event_id}:
+  api/v1/events/{id}:
     "delete:own": ["*"]
 admin:
   api/v1/events:
     "read:any": ["*"]
     "create:any": ["*"]
     "update:any": ["*"]
-  api/v1/events/{event_id}:
+  api/v1/events/{id}:
     "delete:any": ["*"]
