@@ -42,7 +42,7 @@ def delete_event(id):
     service.delete_event(username, id)
     return Response(None, status=204)
 
-@bp.route('/events/login', methods=['POST'])
+@bp.route('/events/sync', methods=['POST'])
 @cross_origin()
 def login_with_google():
     '''auth_token = request.cookies.get('authToken')
@@ -55,3 +55,14 @@ def login_with_google():
     service.login_with_google(username, refresh_token)
     return Response(None, status=200)
     
+
+@bp.route('/events/logout', methods=['GET'])
+@cross_origin()
+def logout_from_google():
+    '''auth_token = request.cookies.get('authToken')
+    encoded_jwt = jwt.decode(auth_token, JWT_SECRET, algorithms=['HS256'])
+    username = encoded_jwt['username']'''
+    username = 'javivm17'
+
+    service.logout_from_google(username)
+    return Response(None, status=200)

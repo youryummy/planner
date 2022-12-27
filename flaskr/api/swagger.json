@@ -16,10 +16,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/event"
-                  }
+                  "$ref": "#/components/schemas/events"
                 }
               }
             }
@@ -128,13 +125,86 @@
           }
         }
       }
+    },
+    "/api/v1/events/sync": {
+      "post": {
+        "description": "Connect your YourYummy account with your Google account",
+        "operationId": "sync",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/sync"
+              }
+            }
+          },
+          "description": "Credentials to connect your account",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Login has been completed succesfully"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/logout": {
+      "get": {
+        "description": "Disconnect your YourYummy account with your Google account",
+        "operationId": "googleLogout",
+        "responses": {
+          "200": {
+            "description": "Logout has been completed succesfully"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "events": {
+        "type": "object",
+        "required": [
+          "isLogged",
+          "events"
+        ],
+        "properties": {
+          "isLogged": {
+            "type": "boolean"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/event"
+            }
+          }
+        }
+      },
       "event": {
         "type": "object",
-        "required": ["id"],
+        "required": [
+          "id"
+        ],
         "properties": {
           "id": {
             "type": "string"
@@ -155,7 +225,10 @@
       },
       "create-event": {
         "type": "object",
-        "required": ["id", "timestamp"],
+        "required": [
+          "id",
+          "timestamp"
+        ],
         "properties": {
           "id": {
             "type": "string"
@@ -167,7 +240,9 @@
       },
       "modify-event": {
         "type": "object",
-        "required": ["id"],
+        "required": [
+          "id"
+        ],
         "properties": {
           "id": {
             "type": "string"
@@ -180,9 +255,22 @@
           }
         }
       },
+      "sync": {
+        "type": "object",
+        "required": [
+          "refreshToken"
+        ],
+        "properties": {
+          "refreshToken": {
+            "type": "string"
+          }
+        }
+      },
       "error": {
         "type": "object",
-        "required": ["message"],
+        "required": [
+          "message"
+        ],
         "properties": {
           "message": {
             "type": "string"

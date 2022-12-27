@@ -7,6 +7,7 @@ import os.path
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 import logging
+import datetime
 
 load_dotenv()
 database_url = os.getenv('DATABASE_URL')
@@ -57,33 +58,41 @@ def get_events(username):
     my_events = events[username]
     detailed_events = []
     for event in my_events:
-        # detailed_recipe = utils.communicate('GET', "".join(['http://localhost:5001/api/v1/recipes/', event['recipe']]), None, username)
-        detailed_recipe = {
-            "id": "1",
-            "name": "recipe1",
-            "description": "recipe1 description",
-            "tags": ["tag1", "tag2"],
-            "ingredients": [
-                {
-                    "id": "1",
-                    "name": "ingredient1",
-                    "quantity": 1,
-                },
-                {
-                    "id": "2",
-                    "name": "ingredient2",
-                    "quantity": 2,
-                }
-            ],
-        }
-        detailed_event = {
-            'id': event['id'],
-            'timestamp': event['timestamp'],
-            'synced': event['synced'],
-            'recipe': detailed_recipe
-        }
-        detailed_events.append(detailed_event)
-    return detailed_events
+        if event is not None and datetime.datetime.fromtimestamp(int(event['timestamp'])) < datetime.datetime.now():
+            continue
+        else:
+            # detailed_recipe = utils.communicate('GET', "".join(['http://localhost:5001/api/v1/recipes/', event['recipe']]), None, username)
+            detailed_recipe = {
+                "id": "1",
+                "name": "recipe1",
+                "description": "recipe1 description",
+                "tags": ["tag1", "tag2"],
+                "ingredients": [
+                    {
+                        "id": "1",
+                        "name": "ingredient1",
+                        "quantity": 1,
+                    },
+                    {
+                        "id": "2",
+                        "name": "ingredient2",
+                        "quantity": 2,
+                    }
+                ],
+            }
+            detailed_event = {
+                'id': event['id'],
+                'timestamp': int(event['timestamp']),
+                'synced': event['synced'],
+                'recipe': detailed_recipe
+            }
+            detailed_events.append(detailed_event)
+    is_logged = check_user_logged_in(username)
+    response = {
+        "isLogged": True if is_logged is not None else False, 
+        "events": detailed_events
+    }
+    return response
 
 
 def update_event(username, modified_event):
@@ -94,7 +103,7 @@ def update_event(username, modified_event):
         if event is not None and event['id'] == modified_event['id']:
             if 'timestamp' in modified_event:
                 event['timestamp'] = modified_event['timestamp']
-            if 'synced' in modified_event:
+            if 'synced' in modified_event and modified_event['synced'] is True:
                 sync_with_google_calendar(username, modified_event)
                 event['synced'] = modified_event['synced']
             break
@@ -170,3 +179,15 @@ def check_user_logged_in(username):
         if username in users:
             return users[username]
     return None
+
+def logout_from_google(username):
+    users = firebase.get('/users', None)
+    users_id = None
+    if users is not None:
+        users_id = list(users)[0]
+        users = users[users_id]
+    else:
+        return
+    if username in users:
+        users.pop(username)
+    firebase.put('/users', users_id, users)
