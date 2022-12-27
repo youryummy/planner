@@ -114,33 +114,59 @@ def delete_event(username, id):
 
 def sync_with_google_calendar(username, event):
     SCOPE= ['https://www.googleapis.com/auth/calendar']
-
-    credentials = {
-        "token": event['accessToken'],
-        "refresh_token": event['refreshToken'],
-        "client_id": os.getenv('CLIENT_ID'),
-        "token_uri": "https://oauth2.googleapis.com/token",
-        "client_secret": os.getenv('CLIENT_SECRET'),
-        "scopes": SCOPE
-    }
-    creds = Credentials.from_authorized_user_info(credentials, SCOPE)
-    service = build('calendar', 'v3', credentials=creds)
     
-    # TODO: call recipes api
-    event = {
-        'summary': 'Google I/O 2015',
-        'location': '800 Howard St., San Francisco, CA 94103',
-        'description': 'A chance to hear more about Google\'s developer products.',
-        'start': {
-            'dateTime': '2021-05-28T09:00:00-07:00',
-            'timeZone': 'America/Los_Angeles',
-        },
-        'end': {
-            'dateTime': '2021-05-28T17:00:00-07:00',
-            'timeZone': 'America/Los_Angeles',
+    refresh_token = check_user_logged_in(username)
+    if refresh_token is not None:
+        credentials = {
+            "token": None,
+            "refresh_token": refresh_token,
+            "client_id": os.getenv('CLIENT_ID'),
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "client_secret": os.getenv('CLIENT_SECRET'),
+            "scopes": SCOPE
         }
-    }
+        creds = Credentials.from_authorized_user_info(credentials, SCOPE)
+        logger.info('Credentials are valid')
+        service = build('calendar', 'v3', credentials=creds)
+        
+        # TODO: call recipes api
+        event = {
+            'summary': 'Google I/O 2015',
+            'location': '800 Howard St., San Francisco, CA 94103',
+            'description': 'A chance to hear more about Google\'s developer products.',
+            'start': {
+                'dateTime': '2022-12-28T09:00:00-07:00',
+                'timeZone': 'America/Los_Angeles',
+            },
+            'end': {
+                'dateTime': '2022-12-28T17:00:00-07:00',
+                'timeZone': 'America/Los_Angeles',
+            }
+        }
 
-    event = service.events().insert(calendarId='primary', body=event).execute()
-    logger.info('Event created: %s' % (event.get('htmlLink')))
-    
+        event = service.events().insert(calendarId='primary', body=event).execute()
+        logger.info('Event created: %s' % (event.get('htmlLink')))
+
+def login_with_google(username, refresh_token):
+    users = firebase.get('/users', None)
+    users_id = None
+    print(users)
+    if users is not None:
+        users_id = list(users)[0]
+        users = users[users_id]
+    else:
+        users = {}
+    users[username] = refresh_token
+    if users_id is None:
+        firebase.post('/users', users)
+    else:
+        firebase.put('/users', users_id, users)
+
+def check_user_logged_in(username):
+    users = firebase.get('/users', None)
+    if users is not None:
+        users_id = list(users)[0]
+        users = users[users_id]
+        if username in users:
+            return users[username]
+    return None

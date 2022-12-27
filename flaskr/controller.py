@@ -18,7 +18,7 @@ def event():
     # encoded_jwt = jwt.decode(auth_token, JWT_SECRET, algorithms=['HS256'])
     # username = encoded_jwt['username']
     # logger.info(f'Processing request for user {username}')
-    username = 'user1'
+    username = 'javivm17'
     if request.method == 'POST':
         body = request.get_json()
         service.create_event(username, body)
@@ -41,3 +41,17 @@ def delete_event(id):
 
     service.delete_event(username, id)
     return Response(None, status=204)
+
+@bp.route('/events/login', methods=['POST'])
+@cross_origin()
+def login_with_google():
+    '''auth_token = request.cookies.get('authToken')
+    encoded_jwt = jwt.decode(auth_token, JWT_SECRET, algorithms=['HS256'])
+    username = encoded_jwt['username']'''
+    username = 'javivm17'
+
+    body = request.get_json()
+    refresh_token = body['refreshToken']
+    service.login_with_google(username, refresh_token)
+    return Response(None, status=200)
+    
