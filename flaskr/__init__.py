@@ -1,5 +1,4 @@
 from flask import Flask, send_from_directory
-from flask_cors import CORS
 from . import controller
 import logging
 
@@ -12,9 +11,6 @@ def create_app(test_config=None):
         SECRET_KEY='dev',
     )
     app.register_blueprint(controller.bp, url_prefix='/api/v1')
-
-    cors = CORS(app, resources={r"/*": {"origins": "*"}})
-    app.config['CORS_HEADERS'] = 'Content-Type'
 
     @app.route('/')
     def health_check():
