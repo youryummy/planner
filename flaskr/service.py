@@ -36,6 +36,12 @@ def create_event(username, body):
         exist_events = False
         events = {username: []}
 
+    # check if recipe exists in recipe microservice
+    # recipe = utils.communicate('GET', "".join(['http://localhost:5001/api/v1/recipes/', body["id"]]), None, username)
+    recipe = "1"
+    if recipe is None:
+        return False, "Recipe not found"
+
     my_events = events[username]
     new_event = {
         "id": uuid.uuid4().hex,
@@ -51,9 +57,9 @@ def create_event(username, body):
     else:
         firebase.put('/events', events_id, events)
 
+    return True, "Created event successfully"
 
 def get_events(username):
-    # check data before upload to firebase
     events, _ = get_firebase_events(username)
     my_events = events[username]
     detailed_events = []
@@ -96,19 +102,27 @@ def get_events(username):
 
 
 def update_event(username, modified_event):
-    # check data before upload to firebase
     events, events_id = get_firebase_events(username)
     my_events = events[username]
+    aux_event_count = 0
     for event in my_events:
         if event is not None and event['id'] == modified_event['id']:
+            aux_event_count += 1
+            if event['synced'] is True:
+                return False, "You can't modify a synced event"
             if 'timestamp' in modified_event:
                 event['timestamp'] = modified_event['timestamp']
             if 'synced' in modified_event and modified_event['synced'] is True:
-                sync_with_google_calendar(username, modified_event)
+                synced, message = sync_with_google_calendar(username, modified_event)
+                if not synced:
+                    return False, message
                 event['synced'] = modified_event['synced']
             break
+    if aux_event_count == 0:
+        return False, "Event not found"
     events[username] = my_events
     firebase.put('/events', events_id, events)
+    return True, "Updated event successfully"
 
 
 def delete_event(username, id):
@@ -139,22 +153,31 @@ def sync_with_google_calendar(username, event):
         service = build('calendar', 'v3', credentials=creds)
         
         # TODO: call recipes api
+
+        startDateTime = datetime.datetime.fromtimestamp(int(event['timestamp'])).isoformat()
+        endDateTime = (datetime.datetime.fromtimestamp(int(event['timestamp'])) + datetime.timedelta(hours=1)).isoformat()
+        timeZone = 'Europe/Madrid'
+
         event = {
             'summary': 'Google I/O 2015',
             'location': '800 Howard St., San Francisco, CA 94103',
             'description': 'A chance to hear more about Google\'s developer products.',
             'start': {
-                'dateTime': '2022-12-28T09:00:00-07:00',
-                'timeZone': 'America/Los_Angeles',
+                'dateTime': startDateTime,
+                'timeZone': timeZone,
             },
             'end': {
-                'dateTime': '2022-12-28T17:00:00-07:00',
-                'timeZone': 'America/Los_Angeles',
+                'dateTime': endDateTime,
+                'timeZone': timeZone,
             }
         }
 
         event = service.events().insert(calendarId='primary', body=event).execute()
         logger.info('Event created: %s' % (event.get('htmlLink')))
+        return True, "Event modified successfully"
+    else:
+        print("User not logged in Google")
+        return False, "User not logged in Google"
 
 def login_with_google(username, refresh_token):
     users = firebase.get('/users', None)
