@@ -46,8 +46,11 @@ def event():
 @bp.route('/events/<id>', methods=['DELETE'])
 def delete_event(id):
     auth_token = request.cookies.get('authToken')
+    if auth_token is None:
+        return Response(None, status=401)
     encoded_jwt = jwt.decode(auth_token, JWT_SECRET, algorithms=['HS256'])
     username = encoded_jwt['username']
+    logger.info(f'Processing request for user {username}')
 
     service.delete_event(username, id)
     return Response(None, status=204)
@@ -55,20 +58,28 @@ def delete_event(id):
 @bp.route('/events/sync', methods=['POST'])
 def login_with_google():
     auth_token = request.cookies.get('authToken')
+    if auth_token is None:
+        return Response(None, status=401)
     encoded_jwt = jwt.decode(auth_token, JWT_SECRET, algorithms=['HS256'])
     username = encoded_jwt['username']
+    logger.info(f'Processing request for user {username}')
 
     body = request.get_json()
-    refresh_token = body['refreshToken']
-    service.login_with_google(username, refresh_token)
+    is_valid, refresh_token_or_message = utils.validate_refresh_token(body)
+    if not is_valid:
+        return Response(refresh_token_or_message, status=400)
+    service.login_with_google(username, refresh_token_or_message)
     return Response(None, status=200)
     
 
 @bp.route('/events/logout', methods=['GET'])
 def logout_from_google():
     auth_token = request.cookies.get('authToken')
+    if auth_token is None:
+        return Response(None, status=401)
     encoded_jwt = jwt.decode(auth_token, JWT_SECRET, algorithms=['HS256'])
     username = encoded_jwt['username']
+    logger.info(f'Processing request for user {username}')
 
     service.logout_from_google(username)
     return Response(None, status=200)

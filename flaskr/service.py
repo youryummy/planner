@@ -61,6 +61,8 @@ def create_event(username, body):
 
 def get_events(username):
     events, _ = get_firebase_events(username)
+    if events is None:
+        events = {username : []}
     my_events = events[username]
     detailed_events = []
     for event in my_events:
@@ -154,26 +156,7 @@ def sync_with_google_calendar(username, event):
         
         # TODO: call recipes api
 
-        startDateTime = datetime.datetime.fromtimestamp(int(event['timestamp'])).isoformat()
-        endDateTime = (datetime.datetime.fromtimestamp(int(event['timestamp'])) + datetime.timedelta(hours=1)).isoformat()
-        timeZone = 'Europe/Madrid'
-
-        event = {
-            'summary': 'Google I/O 2015',
-            'location': '800 Howard St., San Francisco, CA 94103',
-            'description': 'A chance to hear more about Google\'s developer products.',
-            'start': {
-                'dateTime': startDateTime,
-                'timeZone': timeZone,
-            },
-            'end': {
-                'dateTime': endDateTime,
-                'timeZone': timeZone,
-            }
-        }
-
-        event = service.events().insert(calendarId='primary', body=event).execute()
-        logger.info('Event created: %s' % (event.get('htmlLink')))
+        insert_event_in_google_calendar(service, event)
         return True, "Event modified successfully"
     else:
         print("User not logged in Google")
@@ -182,7 +165,6 @@ def sync_with_google_calendar(username, event):
 def login_with_google(username, refresh_token):
     users = firebase.get('/users', None)
     users_id = None
-    print(users)
     if users is not None:
         users_id = list(users)[0]
         users = users[users_id]
@@ -214,3 +196,25 @@ def logout_from_google(username):
     if username in users:
         users.pop(username)
     firebase.put('/users', users_id, users)
+
+def insert_event_in_google_calendar(service, event):
+    startDateTime = datetime.datetime.fromtimestamp(int(event['timestamp'])).isoformat()
+    endDateTime = (datetime.datetime.fromtimestamp(int(event['timestamp'])) + datetime.timedelta(hours=1)).isoformat()
+    timeZone = 'Europe/Madrid'
+
+    event = {
+        'summary': 'Google I/O 2015',
+        'location': '800 Howard St., San Francisco, CA 94103',
+        'description': 'A chance to hear more about Google\'s developer products.',
+        'start': {
+            'dateTime': startDateTime,
+            'timeZone': timeZone,
+        },
+        'end': {
+            'dateTime': endDateTime,
+            'timeZone': timeZone,
+        }
+    }
+
+    event = service.events().insert(calendarId='primary', body=event).execute()
+    logger.info('Event created: %s' % (event.get('htmlLink')))
