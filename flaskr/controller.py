@@ -5,11 +5,13 @@ import logging
 import jwt
 import os
 from . import utils
+import json
 
 bp = Blueprint('planner', __name__)
 logger = logging.getLogger(__name__)
 load_dotenv()
 JWT_SECRET = os.getenv('JWT_SECRET')
+
 
 @bp.route('/events', methods=['GET', 'POST', 'PUT'])
 def event():
@@ -19,15 +21,17 @@ def event():
     encoded_jwt = jwt.decode(auth_token, JWT_SECRET, algorithms=['HS256'])
     username = encoded_jwt['username']
     logger.info(f'Processing request for user {username}')
-    
+
     if request.method == 'POST':
         body = request.get_json()
-        is_valid, message = utils.validate_event(body,'POST')
+        is_valid, message = utils.validate_event(body, 'POST')
         if not is_valid:
-            return Response(message, status=400)
+            resp = json.dumps({'message': message})
+            return Response(resp, status=400)
         created, message = service.create_event(username, body)
         if not created:
-            return Response(message, status=400)
+            resp = json.dumps({'message': message})
+            return Response(resp, status=400)
         return Response(None, status=201)
 
     elif request.method == 'GET':
@@ -35,13 +39,16 @@ def event():
 
     elif request.method == 'PUT':
         modified_event = request.get_json()
-        is_valid, message = utils.validate_event(modified_event,'PUT')
+        is_valid, message = utils.validate_event(modified_event, 'PUT')
         if not is_valid:
-            return Response(message, status=400)
+            resp = json.dumps({'message': message})
+            return Response(resp, status=400)
         modified, message = service.update_event(username, modified_event)
         if not modified:
-            return Response(message, status=400)
+            resp = json.dumps({'message': message})
+            return Response(resp, status=400)
         return Response(None, status=200)
+
 
 @bp.route('/events/<id>', methods=['DELETE'])
 def delete_event(id):
@@ -55,6 +62,7 @@ def delete_event(id):
     service.delete_event(username, id)
     return Response(None, status=204)
 
+
 @bp.route('/events/sync', methods=['POST'])
 def login_with_google():
     auth_token = request.cookies.get('authToken')
@@ -67,10 +75,11 @@ def login_with_google():
     body = request.get_json()
     is_valid, refresh_token_or_message = utils.validate_refresh_token(body)
     if not is_valid:
-        return Response(refresh_token_or_message, status=400)
+        resp = json.dumps({'message': refresh_token_or_message})
+        return Response(resp, status=400)
     service.login_with_google(username, refresh_token_or_message)
     return Response(None, status=200)
-    
+
 
 @bp.route('/events/logout', methods=['GET'])
 def logout_from_google():
