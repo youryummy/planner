@@ -17,7 +17,7 @@ jobs:
           pip install -r requirements.txt
       - name: Run tests
         run: |
-          python -m pytest -v test/test.py -s
+          python -m pytest -v tests/tests.py -s
 
   deploy:
     name: Deploy to Okteto
