@@ -35,5 +35,5 @@ jobs:
           name: planner
           namespace: youryummy-maribelrb22
           variables: >-
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }},
             DATABASE_URL= ${{ secrets.DATABASE_URL }}
