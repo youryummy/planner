@@ -2,6 +2,11 @@ import pytest
 from flaskr import create_app
 from unittest.mock import Mock
 import jwt
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+JWT_SECRET = os.getenv('JWT_SECRET')
 
 # in each test include utils.communicate with recipes microservice
 
@@ -60,7 +65,7 @@ def test_get_events_with_auth(client, monkeypatch):
     monkeypatch.setattr('flaskr.controller.service.firebase.get', events_stub)
     monkeypatch.setattr('flaskr.controller.service.check_user_logged_in', logged_in_stub)
     
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     response = client.get('/api/v1/events')
@@ -77,7 +82,7 @@ def test_get_events_with_auth_and_no_events_exists_in_db(client, monkeypatch):
     monkeypatch.setattr('flaskr.controller.service.firebase.get' , events_stub)
     monkeypatch.setattr('flaskr.controller.service.check_user_logged_in', logged_in_stub)
     
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     response = client.get('/api/v1/events')
@@ -111,7 +116,7 @@ def test_get_events_with_auth_and_no_events(client, monkeypatch):
     monkeypatch.setattr('flaskr.controller.service.firebase.get' , events_stub)
     monkeypatch.setattr('flaskr.controller.service.check_user_logged_in', logged_in_stub)
     
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     response = client.get('/api/v1/events')
@@ -128,7 +133,7 @@ def test_get_events_with_auth_and_user_not_logged_in(client, monkeypatch):
     monkeypatch.setattr('flaskr.controller.service.firebase.get' , events_stub)
     monkeypatch.setattr('flaskr.controller.service.check_user_logged_in', logged_in_stub)
     
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     response = client.get('/api/v1/events')
@@ -140,7 +145,7 @@ def test_get_events_with_auth_and_user_not_logged_in(client, monkeypatch):
 ############################################################################################################
 
 def test_create_event_with_auth_and_no_data(client):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {}
@@ -148,7 +153,7 @@ def test_create_event_with_auth_and_no_data(client):
     assert response.status_code == 400
 
 def test_create_event_with_auth_and_valid_data(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     events_stub = Mock()
@@ -172,7 +177,7 @@ def test_create_event_with_auth_and_valid_data(client, monkeypatch):
     assert response.status_code == 201
 
 def test_create_event_with_auth_and_old_timestamp(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
@@ -184,7 +189,7 @@ def test_create_event_with_auth_and_old_timestamp(client, monkeypatch):
     assert response.status_code == 400
 
 def test_create_event_with_auth_and_invalid_timestamp_type(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
@@ -196,7 +201,7 @@ def test_create_event_with_auth_and_invalid_timestamp_type(client, monkeypatch):
     assert response.status_code == 400
 
 def test_create_event_with_auth_and_no_provided_id(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
@@ -207,7 +212,7 @@ def test_create_event_with_auth_and_no_provided_id(client, monkeypatch):
     assert response.status_code == 400
 
 def test_create_event_with_auth_and_invalid_id(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
@@ -222,7 +227,7 @@ def test_create_event_with_auth_and_invalid_recipe(client, monkeypatch):
     pass # TODO
 
 def test_create_event_with_auth_and_valid_data_for_user_with_events(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     events_stub = Mock()
@@ -264,7 +269,7 @@ def test_create_event_with_auth_and_valid_data_for_user_with_events(client, monk
     assert response.status_code == 201
     
 def test_create_event_with_auth_and_no_data(client):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {}
@@ -272,7 +277,7 @@ def test_create_event_with_auth_and_no_data(client):
     assert response.status_code == 400
 
 def test_create_event_with_auth_and_valid_data(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     events_stub = Mock()
@@ -296,7 +301,7 @@ def test_create_event_with_auth_and_valid_data(client, monkeypatch):
     assert response.status_code == 201
 
 def test_create_event_with_auth_and_old_timestamp(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
@@ -308,7 +313,7 @@ def test_create_event_with_auth_and_old_timestamp(client, monkeypatch):
     assert response.status_code == 400
 
 def test_create_event_with_auth_and_invalid_timestamp_type(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
@@ -320,7 +325,7 @@ def test_create_event_with_auth_and_invalid_timestamp_type(client, monkeypatch):
     assert response.status_code == 400
 
 def test_create_event_with_auth_and_no_provided_id(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
@@ -331,7 +336,7 @@ def test_create_event_with_auth_and_no_provided_id(client, monkeypatch):
     assert response.status_code == 400
 
 def test_create_event_with_auth_and_invalid_id(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
@@ -346,7 +351,7 @@ def test_create_event_with_auth_and_invalid_recipe(client, monkeypatch):
     pass # TODO
 
 def test_create_event_with_auth_and_valid_data_for_user_with_events(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     events_stub = Mock()
@@ -392,7 +397,7 @@ def test_create_event_with_auth_and_valid_data_for_user_with_events(client, monk
 ############################################################################################################
 
 def test_update_event_with_auth_and_no_data(client):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {}
@@ -400,7 +405,7 @@ def test_update_event_with_auth_and_no_data(client):
     assert response.status_code == 400
 
 def test_update_event_with_auth_and_valid_data_timestamp(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     events_stub = Mock()
@@ -439,7 +444,7 @@ def test_update_event_with_auth_and_valid_data_timestamp(client, monkeypatch):
     assert response.status_code == 200
 
 def test_update_event_with_auth_and_valid_data_synced_and_logged_in_google(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     events_stub = Mock()
@@ -490,7 +495,7 @@ def test_update_event_with_auth_and_valid_data_synced_and_logged_in_google(clien
     assert response.status_code == 200
 
 def test_update_event_with_auth_and_valid_data_synced_and_not_logged_in_google(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     events_stub = Mock()
@@ -541,7 +546,7 @@ def test_update_event_with_auth_and_valid_data_synced_and_not_logged_in_google(c
     assert response.status_code == 400
 
 def test_update_event_with_auth_and_valid_data_synced_for_event_synced(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     events_stub = Mock()
@@ -592,7 +597,7 @@ def test_update_event_with_auth_and_valid_data_synced_for_event_synced(client, m
     assert response.status_code == 400
 
 def test_update_event_with_auth_and_valid_data_synced_for_non_exists_event(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     events_stub = Mock()
@@ -643,7 +648,7 @@ def test_update_event_with_auth_and_valid_data_synced_for_non_exists_event(clien
     assert response.status_code == 400
 
 def test_update_event_with_auth_and_no_event_id_provided(client):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
@@ -655,7 +660,7 @@ def test_update_event_with_auth_and_no_event_id_provided(client):
     assert response.status_code == 400
 
 def test_update_event_with_auth_and_id_no_valid(client):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
@@ -668,7 +673,7 @@ def test_update_event_with_auth_and_id_no_valid(client):
     assert response.status_code == 400
 
 def test_update_event_with_auth_and_no_synced_provided(client):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
@@ -680,7 +685,7 @@ def test_update_event_with_auth_and_no_synced_provided(client):
     assert response.status_code == 400
 
 def test_update_event_with_auth_and_synced_no_boolean(client):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {    
@@ -701,7 +706,7 @@ def test_delete_event_with_no_auth(client, monkeypatch):
     assert response.status_code == 401
 
 def test_delete_event_with_auth_and_event_exists(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     events_stub = Mock()
@@ -742,7 +747,7 @@ def test_post_google_login_without_auth(client):
     assert response.status_code == 401
 
 def test_post_google_login_with_auth_and_no_users_are_logged(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     user_get_stub = Mock()
@@ -765,7 +770,7 @@ def test_post_google_login_with_auth_and_no_users_are_logged(client, monkeypatch
     assert response.status_code == 200
 
 def test_post_google_login_with_auth_and_users_are_logged(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     user_get_stub = Mock()
@@ -792,7 +797,7 @@ def test_post_google_login_with_auth_and_users_are_logged(client, monkeypatch):
     assert response.status_code == 200
 
 def test_post_google_login_with_auth_and_no_refresh_token_provided(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {}
@@ -801,7 +806,7 @@ def test_post_google_login_with_auth_and_no_refresh_token_provided(client, monke
     assert response.status_code == 400
 
 def test_post_google_login_with_auth_and_no_valid_refresh_token_provided(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
@@ -816,7 +821,7 @@ def test_get_google_logout_without_auth(client):
     assert response.status_code == 401
 
 def test_get_google_logout_with_auth_and_no_users_are_logged(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     user_get_stub = Mock()
@@ -831,7 +836,7 @@ def test_get_google_logout_with_auth_and_no_users_are_logged(client, monkeypatch
     assert response.status_code == 200
 
 def test_get_google_logout_with_auth_and_users_are_logged(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, 'youryummysecret', algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     user_get_stub = Mock()

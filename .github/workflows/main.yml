@@ -21,6 +21,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           python -m pytest -v tests/tests.py -s
+          python -m pytest -v tests/db_integration_tests.py -s
 
   deploy:
     name: Deploy to Okteto
