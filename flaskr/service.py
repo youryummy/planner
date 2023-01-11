@@ -36,10 +36,8 @@ def create_event(username, body):
         exist_events = False
         events = {username: []}
 
-    # check if recipe exists in recipe microservice
-    # recipe = utils.communicate('GET', "".join(['http://localhost:5001/api/v1/recipes/', body["id"]]), None, username)
-    recipe = "1"
-    if recipe is None:
+    detailed_recipe = utils.communicate('GET', "".join(['http://recipes/api/v1/recipes/', body['id']]), None)
+    if detailed_recipe is None:
         return False, "Recipe not found"
 
     my_events = events[username]
@@ -60,6 +58,7 @@ def create_event(username, body):
     return True, "Created event successfully"
 
 def get_events(username):
+    logger.info("Getting events")
     events, _ = get_firebase_events(username)
     if events is None:
         events = {username : []}
@@ -69,24 +68,12 @@ def get_events(username):
         if event is not None and datetime.datetime.fromtimestamp(int(event['timestamp'])) < datetime.datetime.now():
             continue
         else:
-            # detailed_recipe = utils.communicate('GET', "".join(['http://localhost:5001/api/v1/recipes/', event['recipe']]), None, username)
+            detailed_recipe = utils.communicate('GET', "".join(['http://recipes/api/v1/recipes/', event['recipe']]), None)
             detailed_recipe = {
-                "id": "1",
-                "name": "recipe1",
-                "description": "recipe1 description",
-                "tags": ["tag1", "tag2"],
-                "ingredients": [
-                    {
-                        "id": "1",
-                        "name": "ingredient1",
-                        "quantity": 1,
-                    },
-                    {
-                        "id": "2",
-                        "name": "ingredient2",
-                        "quantity": 2,
-                    }
-                ],
+                "id": detailed_recipe['_id'],
+                "name": detailed_recipe['name'],
+                "description": detailed_recipe['summary'],
+                "tags": detailed_recipe['tags'],
             }
             detailed_event = {
                 'id': event['id'],
@@ -115,6 +102,7 @@ def update_event(username, modified_event):
             if 'timestamp' in modified_event:
                 event['timestamp'] = modified_event['timestamp']
             if 'synced' in modified_event and modified_event['synced'] is True:
+                modified_event['recipe'] = event['recipe']
                 synced, message = sync_with_google_calendar(username, modified_event)
                 if not synced:
                     return False, message
@@ -154,9 +142,9 @@ def sync_with_google_calendar(username, event):
         logger.info('Credentials are valid')
         service = build('calendar', 'v3', credentials=creds)
         
-        # TODO: call recipes api
+        recipe = utils.communicate('GET', "".join(['http://recipes/api/v1/recipes/', event['recipe']]), None)
 
-        insert_event_in_google_calendar(service, event)
+        insert_event_in_google_calendar(service, event, recipe)
         return True, "Event modified successfully"
     else:
         print("User not logged in Google")
@@ -197,15 +185,14 @@ def logout_from_google(username):
         users.pop(username)
     firebase.put('/users', users_id, users)
 
-def insert_event_in_google_calendar(service, event):
+def insert_event_in_google_calendar(service, event, recipe):
     startDateTime = datetime.datetime.fromtimestamp(int(event['timestamp'])).isoformat()
     endDateTime = (datetime.datetime.fromtimestamp(int(event['timestamp'])) + datetime.timedelta(hours=1)).isoformat()
     timeZone = 'Europe/Madrid'
 
     event = {
-        'summary': 'Google I/O 2015',
-        'location': '800 Howard St., San Francisco, CA 94103',
-        'description': 'A chance to hear more about Google\'s developer products.',
+        'summary': 'YourYummy: ' + recipe['name'],
+        'description': recipe['summary'],
         'start': {
             'dateTime': startDateTime,
             'timeZone': timeZone,
