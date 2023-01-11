@@ -17,21 +17,22 @@ JWT_SECRET = os.getenv('JWT_SECRET')
 def event():
     auth_token = request.cookies.get('authToken')
     if auth_token is None:
-        return Response(None, status=401)
+        resp = json.dumps({'message': 'Unauthorized'})
+        return Response(resp, status=401, mimetype='application/json')
     encoded_jwt = jwt.decode(auth_token, JWT_SECRET, algorithms=['HS256'])
     username = encoded_jwt['username']
     logger.info(f'Processing request for user {username}')
-
+    
     if request.method == 'POST':
         body = request.get_json()
         is_valid, message = utils.validate_event(body, 'POST')
         if not is_valid:
             resp = json.dumps({'message': message})
-            return Response(resp, status=400)
+            return Response(resp, status=400, mimetype='application/json')
         created, message = service.create_event(username, body)
         if not created:
             resp = json.dumps({'message': message})
-            return Response(resp, status=400)
+            return Response(resp, status=400, mimetype='application/json')
         return Response(None, status=201)
 
     elif request.method == 'GET':
@@ -42,11 +43,11 @@ def event():
         is_valid, message = utils.validate_event(modified_event, 'PUT')
         if not is_valid:
             resp = json.dumps({'message': message})
-            return Response(resp, status=400)
+            return Response(resp, status=400, mimetype='application/json')
         modified, message = service.update_event(username, modified_event)
         if not modified:
             resp = json.dumps({'message': message})
-            return Response(resp, status=400)
+            return Response(resp, status=400, mimetype='application/json')
         return Response(None, status=200)
 
 
@@ -76,7 +77,7 @@ def login_with_google():
     is_valid, refresh_token_or_message = utils.validate_refresh_token(body)
     if not is_valid:
         resp = json.dumps({'message': refresh_token_or_message})
-        return Response(resp, status=400)
+        return Response(resp, status=400, mimetype='application/json')
     service.login_with_google(username, refresh_token_or_message)
     return Response(None, status=200)
 
