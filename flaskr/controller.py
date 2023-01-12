@@ -16,9 +16,11 @@ JWT_SECRET = os.getenv('JWT_SECRET')
 @bp.route('/events', methods=['GET', 'POST', 'PUT'])
 def event():
     auth_token = request.cookies.get('authToken')
+    logger.info(f'auth_token: {auth_token}')
     if auth_token is None:
         resp = json.dumps({'message': 'Unauthorized'})
         return Response(resp, status=401, mimetype='application/json')
+    logger.info(f'secret: {JWT_SECRET}')
     encoded_jwt = jwt.decode(auth_token, JWT_SECRET, algorithms=['HS256'])
     username = encoded_jwt['username']
     logger.info(f'Processing request for user {username}')
