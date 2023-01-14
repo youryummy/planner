@@ -4,8 +4,6 @@ metadata:
   name: planner
   labels:
     {{- include "planner.labels" . | nindent 4 }}
-  annotations:
-    dev.okteto.com/auto-ingress: "true"
 spec:
   selector:
     app.kubernetes.io/name: planner
