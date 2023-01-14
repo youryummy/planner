@@ -20,7 +20,6 @@ def event():
     if auth_token is None:
         resp = json.dumps({'message': 'Unauthorized'})
         return Response(resp, status=401, mimetype='application/json')
-    logger.info(f'secret: {JWT_SECRET}')
     encoded_jwt = jwt.decode(auth_token, JWT_SECRET, algorithms=['HS256'])
     username = encoded_jwt['username']
     logger.info(f'Processing request for user {username}')
@@ -31,14 +30,20 @@ def event():
         if not is_valid:
             resp = json.dumps({'message': message})
             return Response(resp, status=400, mimetype='application/json')
-        created, message = service.create_event(username, body)
+        created, message, *error_code = service.create_event(username, body)
         if not created:
             resp = json.dumps({'message': message})
-            return Response(resp, status=400, mimetype='application/json')
+            if len(error_code) == 0:
+                return Response(resp, status=400, mimetype='application/json')
+            return Response(resp, status=error_code[0], mimetype='application/json')
         return Response(None, status=201)
 
     elif request.method == 'GET':
-        return service.get_events(username)
+        events = service.get_events(username)
+        if type(events) is str:
+            resp = json.dumps({'message': events})
+            return Response(resp, status=500, mimetype='application/json')
+        return events
 
     elif request.method == 'PUT':
         modified_event = request.get_json()
@@ -46,10 +51,12 @@ def event():
         if not is_valid:
             resp = json.dumps({'message': message})
             return Response(resp, status=400, mimetype='application/json')
-        modified, message = service.update_event(username, modified_event)
+        modified, message, *error_code = service.update_event(username, modified_event)
         if not modified:
             resp = json.dumps({'message': message})
-            return Response(resp, status=400, mimetype='application/json')
+            if len(error_code) == 0:
+                return Response(resp, status=400, mimetype='application/json')
+            return Response(resp, status=error_code[0], mimetype='application/json')
         return Response(None, status=200)
 
 

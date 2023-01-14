@@ -36,7 +36,12 @@ def create_event(username, body):
         exist_events = False
         events = {username: []}
 
-    detailed_recipe = utils.communicate('GET', "".join(['http://recipes/api/v1/recipes/', body['id']]), None)
+    try:
+        detailed_recipe = utils.communicate('GET', "".join(['http://recipes/api/v1/recipes/', body['id']]), None)
+    except:
+        logger.error("Failed to communicate with recipes service")
+        return False, "Failed to communicate with recipes service", 500
+    
     if detailed_recipe is None:
         return False, "Recipe not found"
 
@@ -68,20 +73,25 @@ def get_events(username):
         if event is not None and datetime.datetime.fromtimestamp(int(event['timestamp'])) < datetime.datetime.now():
             continue
         else:
-            detailed_recipe = utils.communicate('GET', "".join(['http://recipes/api/v1/recipes/', event['recipe']]), None)
-            detailed_recipe = {
-                "id": detailed_recipe['_id'],
-                "name": detailed_recipe['name'],
-                "description": detailed_recipe['summary'],
-                "tags": detailed_recipe['tags'],
-            }
-            detailed_event = {
-                'id': event['id'],
-                'timestamp': int(event['timestamp']),
-                'synced': event['synced'],
-                'recipe': detailed_recipe
-            }
-            detailed_events.append(detailed_event)
+            try:
+                detailed_recipe = utils.communicate('GET', "".join(['http://recipes/api/v1/recipes/', event['recipe']]), None)
+            except:
+                logger.error("Failed to communicate with recipes service")
+                return "Failed to communicate with recipes service"
+            if detailed_recipe is not None:
+                detailed_recipe = {
+                    "id": detailed_recipe['_id'],
+                    "name": detailed_recipe['name'],
+                    "description": detailed_recipe['summary'],
+                    "tags": detailed_recipe['tags'],
+                }
+                detailed_event = {
+                    'id': event['id'],
+                    'timestamp': int(event['timestamp']),
+                    'synced': event['synced'],
+                    'recipe': detailed_recipe
+                }
+                detailed_events.append(detailed_event)
     is_logged = check_user_logged_in(username)
     response = {
         "isLogged": True if is_logged is not None else False, 
@@ -103,9 +113,12 @@ def update_event(username, modified_event):
                 event['timestamp'] = modified_event['timestamp']
             if 'synced' in modified_event and modified_event['synced'] is True:
                 modified_event['recipe'] = event['recipe']
-                synced, message = sync_with_google_calendar(username, modified_event)
+                synced, message, *error_code = sync_with_google_calendar(username, modified_event)
                 if not synced:
-                    return False, message
+                    print(error_code)
+                    if len(error_code) == 0:
+                        return False, message
+                    return False, message, error_code[0]
                 event['synced'] = modified_event['synced']
             break
     if aux_event_count == 0:
@@ -142,7 +155,11 @@ def sync_with_google_calendar(username, event):
         logger.info('Credentials are valid')
         service = build('calendar', 'v3', credentials=creds)
         
-        recipe = utils.communicate('GET', "".join(['http://recipes/api/v1/recipes/', event['recipe']]), None)
+        try:
+            recipe = utils.communicate('GET', "".join(['http://recipes/api/v1/recipes/', event['recipe']]), None)
+        except:
+            logger.error("Failed to communicate with recipes service")
+            return False, "Failed to communicate with recipes service", 500
 
         insert_event_in_google_calendar(service, event, recipe)
         return True, "Event modified successfully"

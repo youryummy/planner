@@ -47,13 +47,13 @@ def test_get_events_with_auth(client, monkeypatch):
         "maribelrb": [
             {
             "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": {"id":"1"},
+            "recipe": "1",
             "synced": False,
             "timestamp": 3471698180
             },
             {
             "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": {"id":"1"},
+            "recipe": "1",
             "synced": False,
             "timestamp": 1578243461
             }
@@ -62,9 +62,19 @@ def test_get_events_with_auth(client, monkeypatch):
     }
     logged_in_stub = Mock()
     logged_in_stub.return_value = "auth_token"
+
+    recipes_stub = Mock()
+    recipes_stub.return_value = {
+        "_id": "1",
+        "name": "test",
+        "summary": "test",
+        "tags": ["test"]
+    }
+
     monkeypatch.setattr('flaskr.controller.service.firebase.get', events_stub)
     monkeypatch.setattr('flaskr.controller.service.check_user_logged_in', logged_in_stub)
-    
+    monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
+
     token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
@@ -96,13 +106,13 @@ def test_get_events_with_auth_and_no_events(client, monkeypatch):
         "javivm17": [
             {
             "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": {"id":"1"},
+            "recipe": "1",
             "synced": False,
             "timestamp": 3471698180
             },
             {
             "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": {"id":"1"},
+            "recipe": "1",
             "synced": False,
             "timestamp": 3471698180
             }
@@ -140,6 +150,75 @@ def test_get_events_with_auth_and_user_not_logged_in(client, monkeypatch):
     assert response.status_code == 200
     assert response.json['isLogged'] == False
 
+def test_get_events_with_auth_and_fail_to_connect_with_recipes(client, monkeypatch):
+    events_stub = Mock()
+    events_stub.return_value ={
+        "-NJioAHojZF1Plwd4QC3": {
+        "maribelrb": [
+            {
+            "id": "6d0cde4325df4821afd2d71153f4ae06",
+            "recipe": "1",
+            "synced": False,
+            "timestamp": 3471698180
+            },
+            {
+            "id": "612dd6ffb76744a2951ca14e0755d7d7",
+            "recipe": "1",
+            "synced": False,
+            "timestamp": 1578243461
+            }
+        ],
+        }
+    }
+    logged_in_stub = Mock()
+    logged_in_stub.return_value = "auth_token"
+
+    monkeypatch.setattr('flaskr.controller.service.firebase.get', events_stub)
+    monkeypatch.setattr('flaskr.controller.service.check_user_logged_in', logged_in_stub)
+
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
+    client.set_cookie('localhost', 'authToken', token)
+
+    response = client.get('/api/v1/events')
+    assert response.status_code == 500
+    assert response.json['message'] == 'Failed to communicate with recipes service'
+
+def test_get_events_with_auth_and_an_invalid_recipe(client, monkeypatch):
+    events_stub = Mock()
+    events_stub.return_value ={
+        "-NJioAHojZF1Plwd4QC3": {
+        "maribelrb": [
+            {
+            "id": "6d0cde4325df4821afd2d71153f4ae06",
+            "recipe": "1",
+            "synced": False,
+            "timestamp": 3471698180
+            },
+            {
+            "id": "612dd6ffb76744a2951ca14e0755d7d7",
+            "recipe": "1",
+            "synced": False,
+            "timestamp": 1578243461
+            }
+        ],
+        }
+    }
+    logged_in_stub = Mock()
+    logged_in_stub.return_value = "auth_token"
+
+    recipes_stub = Mock()
+    recipes_stub.return_value = None
+
+    monkeypatch.setattr('flaskr.controller.service.firebase.get', events_stub)
+    monkeypatch.setattr('flaskr.controller.service.check_user_logged_in', logged_in_stub)
+    monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
+
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
+    client.set_cookie('localhost', 'authToken', token)
+
+    response = client.get('/api/v1/events')
+    assert response.status_code == 200
+
 ############################################################################################################
 ############################################ CREATE TESTS ##################################################
 ############################################################################################################
@@ -168,6 +247,14 @@ def test_create_event_with_auth_and_valid_data(client, monkeypatch):
     put_stub.return_value = None
     monkeypatch.setattr('flaskr.controller.service.firebase.put', put_stub)
 
+
+    recipes_stub = Mock()
+    recipes_stub.return_value = {
+        "id": "1",
+    }
+
+    monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
+
     body = {
         "timestamp": 3471698180,
         "id": "1"
@@ -224,7 +311,35 @@ def test_create_event_with_auth_and_invalid_id(client, monkeypatch):
     assert response.status_code == 400
 
 def test_create_event_with_auth_and_invalid_recipe(client, monkeypatch):
-    pass # TODO
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
+    client.set_cookie('localhost', 'authToken', token)
+
+    events_stub = Mock()
+    events_stub.return_value = None
+    monkeypatch.setattr('flaskr.controller.service.firebase.get', events_stub)
+
+    post_stub = Mock()
+    post_stub.return_value = None
+    monkeypatch.setattr('flaskr.controller.service.firebase.post', post_stub)
+
+    put_stub = Mock()
+    put_stub.return_value = None
+    monkeypatch.setattr('flaskr.controller.service.firebase.put', put_stub)
+
+
+    recipes_stub = Mock()
+    recipes_stub.return_value = None
+
+    monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
+
+    body = {
+        "timestamp": 3471698180,
+        "id": "1"
+    }
+
+    response = client.post('/api/v1/events', json=body)
+    assert response.status_code == 400
+
 
 def test_create_event_with_auth_and_valid_data_for_user_with_events(client, monkeypatch):
     token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
@@ -236,13 +351,13 @@ def test_create_event_with_auth_and_valid_data_for_user_with_events(client, monk
         "maribelrb": [
             {
             "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": {"id":"1"},
+            "recipe": "1",
             "synced": False,
             "timestamp": 3471698180
             },
             {
             "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": {"id":"1"},
+            "recipe": "1",
             "synced": False,
             "timestamp": 3471698180
             }
@@ -259,6 +374,13 @@ def test_create_event_with_auth_and_valid_data_for_user_with_events(client, monk
     put_stub = Mock()
     put_stub.return_value = None
     monkeypatch.setattr('flaskr.controller.service.firebase.put', put_stub)
+
+    recipes_stub = Mock()
+    recipes_stub.return_value = {
+        "id": "1",
+    }
+
+    monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
 
     body = {
         "timestamp": 3471698180,
@@ -292,6 +414,13 @@ def test_create_event_with_auth_and_valid_data(client, monkeypatch):
     put_stub.return_value = None
     monkeypatch.setattr('flaskr.controller.service.firebase.put', put_stub)
 
+    recipes_stub = Mock()
+    recipes_stub.return_value = {
+        "id": "1",
+    }
+
+    monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
+
     body = {
         "timestamp": 3471698180,
         "id": "1"
@@ -347,33 +476,12 @@ def test_create_event_with_auth_and_invalid_id(client, monkeypatch):
     response = client.post('/api/v1/events', json=body)
     assert response.status_code == 400
 
-def test_create_event_with_auth_and_invalid_recipe(client, monkeypatch):
-    pass # TODO
-
-def test_create_event_with_auth_and_valid_data_for_user_with_events(client, monkeypatch):
+def test_create_event_with_auth_and_valid_data_and_fail_to_connect_with_recipes(client, monkeypatch):
     token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     events_stub = Mock()
-    events_stub.return_value = {
-        "-NJioAHojZF1Plwd4QC3": {
-        "maribelrb": [
-            {
-            "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": {"id":"1"},
-            "synced": False,
-            "timestamp": 3471698180
-            },
-            {
-            "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": {"id":"1"},
-            "synced": False,
-            "timestamp": 3471698180
-            }
-        ],
-        }
-    }
-
+    events_stub.return_value = None
     monkeypatch.setattr('flaskr.controller.service.firebase.get', events_stub)
 
     post_stub = Mock()
@@ -390,7 +498,8 @@ def test_create_event_with_auth_and_valid_data_for_user_with_events(client, monk
     }
 
     response = client.post('/api/v1/events', json=body)
-    assert response.status_code == 201
+    assert response.status_code == 500
+    assert response.json['message'] == 'Failed to communicate with recipes service'
 
 ############################################################################################################
 ############################################ UPDATE TESTS ##################################################
@@ -414,13 +523,13 @@ def test_update_event_with_auth_and_valid_data_timestamp(client, monkeypatch):
         "maribelrb": [
             {
             "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": {"id":"1"},
+            "recipe": "1",
             "synced": False,
             "timestamp": 3471698180
             },
             {
             "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": {"id":"1"},
+            "recipe": "1",
             "synced": False,
             "timestamp": 3471698180
             }
@@ -453,13 +562,13 @@ def test_update_event_with_auth_and_valid_data_synced_and_logged_in_google(clien
         "maribelrb": [
             {
             "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": {"id":"1"},
+            "recipe": "1",
             "synced": False,
             "timestamp": 3471698180
             },
             {
             "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": {"id":"1"},
+            "recipe": "1",
             "synced": False,
             "timestamp": 3471698180
             }
@@ -485,6 +594,15 @@ def test_update_event_with_auth_and_valid_data_synced_and_logged_in_google(clien
     service_stub.return_value = {}
     monkeypatch.setattr('flaskr.controller.service.insert_event_in_google_calendar', service_stub)
 
+    recipes_stub = Mock()
+    recipes_stub.return_value = {
+        "_id": "1",
+        "name": "test",
+        "summary": "test",
+        "tags": ["test"]
+    }
+    monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
+
     body = {
         "timestamp": 3471698180,
         "id": "6d0cde4325df4821afd2d71153f4ae06",
@@ -504,13 +622,13 @@ def test_update_event_with_auth_and_valid_data_synced_and_not_logged_in_google(c
         "maribelrb": [
             {
             "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": {"id":"1"},
+            "recipe": "1",
             "synced": False,
             "timestamp": 3471698180
             },
             {
             "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": {"id":"1"},
+            "recipe": "1",
             "synced": False,
             "timestamp": 3471698180
             }
@@ -555,14 +673,14 @@ def test_update_event_with_auth_and_valid_data_synced_for_event_synced(client, m
         "maribelrb": [
             {
             "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": {"id":"1"},
+            "recipe": "1",
             "synced": True,
             "timestamp": 3471698180
             },
             {
             "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": {"id":"1"},
-            "synced": False,
+            "recipe": "1",
+            "synced": True,
             "timestamp": 3471698180
             }
         ],
@@ -606,13 +724,13 @@ def test_update_event_with_auth_and_valid_data_synced_for_non_exists_event(clien
         "maribelrb": [
             {
             "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": {"id":"1"},
+            "recipe": "1",
             "synced": False,
             "timestamp": 3471698180
             },
             {
             "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": {"id":"1"},
+            "recipe": "1",
             "synced": False,
             "timestamp": 3471698180
             }
@@ -696,6 +814,58 @@ def test_update_event_with_auth_and_synced_no_boolean(client):
 
     response = client.put('/api/v1/events', json=body)
     assert response.status_code == 400
+
+def test_update_event_with_auth_and_valid_data_synced_and_logged_in_google_and_fail_to_connect_with_recipes(client, monkeypatch):
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
+    client.set_cookie('localhost', 'authToken', token)
+
+    events_stub = Mock()
+    events_stub.return_value = {
+        "-NJioAHojZF1Plwd4QC3": {
+        "maribelrb": [
+            {
+            "id": "6d0cde4325df4821afd2d71153f4ae06",
+            "recipe": "1",
+            "synced": False,
+            "timestamp": 3471698180
+            },
+            {
+            "id": "612dd6ffb76744a2951ca14e0755d7d7",
+            "recipe": "1",
+            "synced": False,
+            "timestamp": 3471698180
+            }
+        ],
+        }
+    }
+
+    monkeypatch.setattr('flaskr.controller.service.firebase.get', events_stub)
+
+    put_stub = Mock()
+    put_stub.return_value = None
+    monkeypatch.setattr('flaskr.controller.service.firebase.put', put_stub)
+
+    check_user_stub = Mock()
+    check_user_stub.return_value = "refreshtoken"
+    monkeypatch.setattr('flaskr.controller.service.check_user_logged_in', check_user_stub)
+
+    build_stub = Mock()
+    build_stub.return_value = True
+    monkeypatch.setattr('flaskr.controller.service.build', build_stub)
+
+    service_stub = Mock()
+    service_stub.return_value = {}
+    monkeypatch.setattr('flaskr.controller.service.insert_event_in_google_calendar', service_stub)
+
+    body = {
+        "timestamp": 3471698180,
+        "id": "6d0cde4325df4821afd2d71153f4ae06",
+        "synced": True
+    }
+
+    response = client.put('/api/v1/events', json=body)
+    assert response.status_code == 500
+    assert response.json['message'] == 'Failed to communicate with recipes service'
 
 ############################################################################################################
 ############################################ DELETE TESTS ##################################################

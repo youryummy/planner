@@ -21,9 +21,16 @@ def client(app):
 def runner(app):
     return app.test_cli_runner()
 
-def test_post_in_db(client):
+def test_post_in_db(client, monkeypatch):
     token = jwt.encode({'username': 'user_test', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
+
+    recipes_stub = Mock()
+    recipes_stub.return_value = {
+        "id": "1",
+    }
+
+    monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
 
     body = {
         "timestamp": 3471698180,
@@ -33,16 +40,36 @@ def test_post_in_db(client):
     response = client.post('/api/v1/events', json=body)
     assert response.status_code == 201
 
-def test_get_in_db(client):
+def test_get_in_db(client, monkeypatch):
     token = jwt.encode({'username': 'user_test', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
+
+    recipes_stub = Mock()
+    recipes_stub.return_value = {
+        "_id": "1",
+        "name": "test",
+        "summary": "test",
+        "tags": ["test"]
+    }
+
+    monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
 
     response = client.get('/api/v1/events')
     assert response.status_code == 200
 
-def test_put_in_db(client):
+def test_put_in_db(client, monkeypatch):
     token = jwt.encode({'username': 'user_test', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
+
+    recipes_stub = Mock()
+    recipes_stub.return_value = {
+        "_id": "1",
+        "name": "test",
+        "summary": "test",
+        "tags": ["test"]
+    }
+
+    monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
 
     test_events = client.get('/api/v1/events')
     test_events = test_events.get_json()
@@ -57,10 +84,20 @@ def test_put_in_db(client):
     response = client.put('/api/v1/events', json=body)
     assert response.status_code == 200
 
-def test_delete_in_db(client):
+def test_delete_in_db(client, monkeypatch):
     token = jwt.encode({'username': 'user_test', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
     
+    recipes_stub = Mock()
+    recipes_stub.return_value = {
+        "_id": "1",
+        "name": "test",
+        "summary": "test",
+        "tags": ["test"]
+    }
+
+    monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
+
     test_events = client.get('/api/v1/events')
     test_events = test_events.get_json()
     id = test_events['events'][0]["id"]
