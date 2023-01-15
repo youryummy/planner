@@ -84,6 +84,7 @@ def get_events(username):
                     "name": detailed_recipe['name'],
                     "description": detailed_recipe['summary'],
                     "tags": detailed_recipe['tags'],
+                    "imageUrl": detailed_recipe['imageUrl'],
                 }
                 detailed_event = {
                     'id': event['id'],
