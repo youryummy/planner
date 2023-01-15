@@ -26,6 +26,10 @@ spec:
               value: {{ .Values.planner.databaseUrl }}
             - name: JWT_SECRET
               value: {{ .Values.planner.jwtSecret }}
+            - name: CLIENT_SECRET
+              value: {{ .Values.planner.clientSecret }}
+            - name: CLIENT_ID
+              value: {{ .Values.planner.clientId }}
           ports:
             - name: http
               containerPort: 80
