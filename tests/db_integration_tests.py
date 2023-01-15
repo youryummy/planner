@@ -49,7 +49,8 @@ def test_get_in_db(client, monkeypatch):
         "_id": "1",
         "name": "test",
         "summary": "test",
-        "tags": ["test"]
+        "tags": ["test"],
+        "imageUrl": "https://spoonacular.com/recipeImages/1-556x370.jpg"
     }
 
     monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
@@ -66,7 +67,8 @@ def test_put_in_db(client, monkeypatch):
         "_id": "1",
         "name": "test",
         "summary": "test",
-        "tags": ["test"]
+        "tags": ["test"],
+        "imageUrl": "https://spoonacular.com/recipeImages/1-556x370.jpg"
     }
 
     monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
@@ -93,7 +95,8 @@ def test_delete_in_db(client, monkeypatch):
         "_id": "1",
         "name": "test",
         "summary": "test",
-        "tags": ["test"]
+        "tags": ["test"],
+        "imageUrl": "https://spoonacular.com/recipeImages/1-556x370.jpg"
     }
 
     monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)

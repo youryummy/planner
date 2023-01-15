@@ -63,7 +63,6 @@ def create_event(username, body):
     return True, "Created event successfully"
 
 def get_events(username):
-    logger.info("Getting events")
     events, _ = get_firebase_events(username)
     if events is None:
         events = {username : []}
@@ -116,7 +115,6 @@ def update_event(username, modified_event):
                 modified_event['recipe'] = event['recipe']
                 synced, message, *error_code = sync_with_google_calendar(username, modified_event)
                 if not synced:
-                    print(error_code)
                     if len(error_code) == 0:
                         return False, message
                     return False, message, error_code[0]
@@ -165,7 +163,6 @@ def sync_with_google_calendar(username, event):
         insert_event_in_google_calendar(service, event, recipe)
         return True, "Event modified successfully"
     else:
-        print("User not logged in Google")
         return False, "User not logged in Google"
 
 def login_with_google(username, refresh_token):

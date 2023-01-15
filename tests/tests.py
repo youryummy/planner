@@ -46,16 +46,16 @@ def test_get_events_with_auth(client, monkeypatch):
         "-NJioAHojZF1Plwd4QC3": {
         "maribelrb": [
             {
-            "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "6d0cde4325df4821afd2d71153f4ae06",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             },
             {
-            "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 1578243461
+                "id": "612dd6ffb76744a2951ca14e0755d7d7",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 1578243461
             }
         ],
         }
@@ -68,7 +68,8 @@ def test_get_events_with_auth(client, monkeypatch):
         "_id": "1",
         "name": "test",
         "summary": "test",
-        "tags": ["test"]
+        "tags": ["test"],
+        "imageUrl": "https://spoonacular.com/recipeImages/1-556x370.jpg",
     }
 
     monkeypatch.setattr('flaskr.controller.service.firebase.get', events_stub)
@@ -105,16 +106,16 @@ def test_get_events_with_auth_and_no_events(client, monkeypatch):
         "-NJioAHojZF1Plwd4QC3": {
         "javivm17": [
             {
-            "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "6d0cde4325df4821afd2d71153f4ae06",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             },
             {
-            "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "612dd6ffb76744a2951ca14e0755d7d7",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             }
         ],
         }
@@ -156,16 +157,16 @@ def test_get_events_with_auth_and_fail_to_connect_with_recipes(client, monkeypat
         "-NJioAHojZF1Plwd4QC3": {
         "maribelrb": [
             {
-            "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "6d0cde4325df4821afd2d71153f4ae06",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             },
             {
-            "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 1578243461
+                "id": "612dd6ffb76744a2951ca14e0755d7d7",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 1578243461
             }
         ],
         }
@@ -189,16 +190,16 @@ def test_get_events_with_auth_and_an_invalid_recipe(client, monkeypatch):
         "-NJioAHojZF1Plwd4QC3": {
         "maribelrb": [
             {
-            "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "6d0cde4325df4821afd2d71153f4ae06",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             },
             {
-            "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 1578243461
+                "id": "612dd6ffb76744a2951ca14e0755d7d7",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 1578243461
             }
         ],
         }
@@ -350,16 +351,16 @@ def test_create_event_with_auth_and_valid_data_for_user_with_events(client, monk
         "-NJioAHojZF1Plwd4QC3": {
         "maribelrb": [
             {
-            "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "6d0cde4325df4821afd2d71153f4ae06",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             },
             {
-            "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "612dd6ffb76744a2951ca14e0755d7d7",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             }
         ],
         }
@@ -522,16 +523,16 @@ def test_update_event_with_auth_and_valid_data_timestamp(client, monkeypatch):
         "-NJioAHojZF1Plwd4QC3": {
         "maribelrb": [
             {
-            "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "6d0cde4325df4821afd2d71153f4ae06",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             },
             {
-            "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "612dd6ffb76744a2951ca14e0755d7d7",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             }
         ],
         }
@@ -561,16 +562,16 @@ def test_update_event_with_auth_and_valid_data_synced_and_logged_in_google(clien
         "-NJioAHojZF1Plwd4QC3": {
         "maribelrb": [
             {
-            "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "6d0cde4325df4821afd2d71153f4ae06",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             },
             {
-            "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "612dd6ffb76744a2951ca14e0755d7d7",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             }
         ],
         }
@@ -599,7 +600,8 @@ def test_update_event_with_auth_and_valid_data_synced_and_logged_in_google(clien
         "_id": "1",
         "name": "test",
         "summary": "test",
-        "tags": ["test"]
+        "tags": ["test"],
+        "imageUrl": "https://spoonacular.com/recipeImages/1-556x370.jpg",
     }
     monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
 
@@ -621,16 +623,16 @@ def test_update_event_with_auth_and_valid_data_synced_and_not_logged_in_google(c
         "-NJioAHojZF1Plwd4QC3": {
         "maribelrb": [
             {
-            "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "6d0cde4325df4821afd2d71153f4ae06",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             },
             {
-            "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "612dd6ffb76744a2951ca14e0755d7d7",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             }
         ],
         }
@@ -672,16 +674,16 @@ def test_update_event_with_auth_and_valid_data_synced_for_event_synced(client, m
         "-NJioAHojZF1Plwd4QC3": {
         "maribelrb": [
             {
-            "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": "1",
-            "synced": True,
-            "timestamp": 3471698180
+                "id": "6d0cde4325df4821afd2d71153f4ae06",
+                "recipe": "1",
+                "synced": True,
+                "timestamp": 3471698180
             },
             {
-            "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": "1",
-            "synced": True,
-            "timestamp": 3471698180
+                "id": "612dd6ffb76744a2951ca14e0755d7d7",
+                "recipe": "1",
+                "synced": True,
+                "timestamp": 3471698180
             }
         ],
         }
@@ -723,16 +725,16 @@ def test_update_event_with_auth_and_valid_data_synced_for_non_exists_event(clien
         "-NJioAHojZF1Plwd4QC3": {
         "maribelrb": [
             {
-            "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "6d0cde4325df4821afd2d71153f4ae06",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             },
             {
-            "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "612dd6ffb76744a2951ca14e0755d7d7",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             }
         ],
         }
@@ -824,16 +826,16 @@ def test_update_event_with_auth_and_valid_data_synced_and_logged_in_google_and_f
         "-NJioAHojZF1Plwd4QC3": {
         "maribelrb": [
             {
-            "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "6d0cde4325df4821afd2d71153f4ae06",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             },
             {
-            "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": "1",
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "612dd6ffb76744a2951ca14e0755d7d7",
+                "recipe": "1",
+                "synced": False,
+                "timestamp": 3471698180
             }
         ],
         }
@@ -884,16 +886,16 @@ def test_delete_event_with_auth_and_event_exists(client, monkeypatch):
         "-NJioAHojZF1Plwd4QC3": {
         "maribelrb": [
             {
-            "id": "6d0cde4325df4821afd2d71153f4ae06",
-            "recipe": {"id":"1"},
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "6d0cde4325df4821afd2d71153f4ae06",
+                "recipe": {"id":"1"},
+                "synced": False,
+                "timestamp": 3471698180
             },
             {
-            "id": "612dd6ffb76744a2951ca14e0755d7d7",
-            "recipe": {"id":"1"},
-            "synced": False,
-            "timestamp": 3471698180
+                "id": "612dd6ffb76744a2951ca14e0755d7d7",
+                "recipe": {"id":"1"},
+                "synced": False,
+                "timestamp": 3471698180
             }
         ],
         }
@@ -917,7 +919,7 @@ def test_post_google_login_without_auth(client):
     assert response.status_code == 401
 
 def test_post_google_login_with_auth_and_no_users_are_logged(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'premium'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     user_get_stub = Mock()
@@ -940,7 +942,7 @@ def test_post_google_login_with_auth_and_no_users_are_logged(client, monkeypatch
     assert response.status_code == 200
 
 def test_post_google_login_with_auth_and_users_are_logged(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'premium'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     user_get_stub = Mock()
@@ -966,8 +968,8 @@ def test_post_google_login_with_auth_and_users_are_logged(client, monkeypatch):
     response = client.post('/api/v1/events/sync', json=body)
     assert response.status_code == 200
 
-def test_post_google_login_with_auth_and_no_refresh_token_provided(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
+def test_post_google_login_with_auth_and_no_refresh_token_provided(client):
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'premium'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {}
@@ -975,8 +977,8 @@ def test_post_google_login_with_auth_and_no_refresh_token_provided(client, monke
     response = client.post('/api/v1/events/sync', json=body)
     assert response.status_code == 400
 
-def test_post_google_login_with_auth_and_no_valid_refresh_token_provided(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
+def test_post_google_login_with_auth_and_no_valid_refresh_token_provided(client):
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'premium'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
@@ -986,12 +988,24 @@ def test_post_google_login_with_auth_and_no_valid_refresh_token_provided(client,
     response = client.post('/api/v1/events/sync', json=body)
     assert response.status_code == 400
 
+def test_post_google_login_with_auth_and_base_plan(client):
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
+    client.set_cookie('localhost', 'authToken', token)
+
+    body = {
+        "refreshToken": "refreshToken"
+    }
+
+    response = client.post('/api/v1/events/sync', json=body)
+    assert response.status_code == 401
+
+
 def test_get_google_logout_without_auth(client):
     response = client.get('/api/v1/events/logout')
     assert response.status_code == 401
 
 def test_get_google_logout_with_auth_and_no_users_are_logged(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'premium'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     user_get_stub = Mock()
@@ -1006,7 +1020,7 @@ def test_get_google_logout_with_auth_and_no_users_are_logged(client, monkeypatch
     assert response.status_code == 200
 
 def test_get_google_logout_with_auth_and_users_are_logged(client, monkeypatch):
-    token = jwt.encode({'username': 'maribelrb', 'plan': 'base'}, JWT_SECRET, algorithm='HS256')
+    token = jwt.encode({'username': 'maribelrb', 'plan': 'premium'}, JWT_SECRET, algorithm='HS256')
     client.set_cookie('localhost', 'authToken', token)
 
     user_get_stub = Mock()

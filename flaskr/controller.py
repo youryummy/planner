@@ -16,7 +16,6 @@ JWT_SECRET = os.getenv('JWT_SECRET')
 @bp.route('/events', methods=['GET', 'POST', 'PUT'])
 def event():
     auth_token = request.cookies.get('authToken')
-    logger.info(f'auth_token: {auth_token}')
     if auth_token is None:
         resp = json.dumps({'message': 'Unauthorized'})
         return Response(resp, status=401, mimetype='application/json')
@@ -77,10 +76,16 @@ def delete_event(id):
 def login_with_google():
     auth_token = request.cookies.get('authToken')
     if auth_token is None:
-        return Response(None, status=401)
+        resp = json.dumps({'message': 'Unauthorized'})
+        return Response(resp, status=401, mimetype='application/json')
     encoded_jwt = jwt.decode(auth_token, JWT_SECRET, algorithms=['HS256'])
     username = encoded_jwt['username']
     logger.info(f'Processing request for user {username}')
+
+    plan_selected = encoded_jwt['plan']
+    if plan_selected == "base":
+        resp = json.dumps({'message': 'Unauthorized'})
+        return Response(resp, status=401, mimetype='application/json')
 
     body = request.get_json()
     is_valid, refresh_token_or_message = utils.validate_refresh_token(body)
@@ -95,7 +100,8 @@ def login_with_google():
 def logout_from_google():
     auth_token = request.cookies.get('authToken')
     if auth_token is None:
-        return Response(None, status=401)
+        resp = json.dumps({'message': 'Unauthorized'})
+        return Response(resp, status=401, mimetype='application/json')
     encoded_jwt = jwt.decode(auth_token, JWT_SECRET, algorithms=['HS256'])
     username = encoded_jwt['username']
     logger.info(f'Processing request for user {username}')
