@@ -81,7 +81,7 @@ def get_events(username):
                 detailed_recipe = {
                     "id": detailed_recipe['_id'],
                     "name": detailed_recipe['name'],
-                    "description": " " if 'summary' in detailed_recipe else detailed_recipe['summary'],
+                    "description": " " if 'summary' not in detailed_recipe else detailed_recipe['summary'],
                     "tags": detailed_recipe['tags'],
                     "imageUrl": " " if 'imageUrl' not in detailed_recipe else detailed_recipe['imageUrl'],
                 }
