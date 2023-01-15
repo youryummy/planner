@@ -81,9 +81,9 @@ def get_events(username):
                 detailed_recipe = {
                     "id": detailed_recipe['_id'],
                     "name": detailed_recipe['name'],
-                    "description": detailed_recipe['summary'],
+                    "description": " " if 'summary' in detailed_recipe else detailed_recipe['summary'],
                     "tags": detailed_recipe['tags'],
-                    "imageUrl": detailed_recipe['imageUrl'],
+                    "imageUrl": " " if 'imageUrl' not in detailed_recipe else detailed_recipe['imageUrl'],
                 }
                 detailed_event = {
                     'id': event['id'],
@@ -207,7 +207,7 @@ def insert_event_in_google_calendar(service, event, recipe):
 
     event = {
         'summary': 'YourYummy: ' + recipe['name'],
-        'description': recipe['summary'],
+        'description': " " if 'summary' in recipe else recipe['summary'],
         'start': {
             'dateTime': startDateTime,
             'timeZone': timeZone,

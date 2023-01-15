@@ -8,8 +8,6 @@ from dotenv import load_dotenv
 load_dotenv()
 JWT_SECRET = os.getenv('JWT_SECRET')
 
-# in each test include utils.communicate with recipes microservice
-
 @pytest.fixture
 def app():
     app = create_app()
