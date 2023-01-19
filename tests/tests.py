@@ -255,7 +255,7 @@ def test_create_event_with_auth_and_valid_data(client, monkeypatch):
     monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
 
     body = {
-        "timestamp": 3471698180,
+        "timestamp": 1737250585,
         "id": "1"
     }
 
@@ -332,7 +332,7 @@ def test_create_event_with_auth_and_invalid_recipe(client, monkeypatch):
     monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
 
     body = {
-        "timestamp": 3471698180,
+        "timestamp": 1737250585,
         "id": "1"
     }
 
@@ -382,7 +382,7 @@ def test_create_event_with_auth_and_valid_data_for_user_with_events(client, monk
     monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
 
     body = {
-        "timestamp": 3471698180,
+        "timestamp": 1737250585,
         "id": "1"
     }
 
@@ -421,7 +421,7 @@ def test_create_event_with_auth_and_valid_data(client, monkeypatch):
     monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
 
     body = {
-        "timestamp": 3471698180,
+        "timestamp": 1737250585,
         "id": "1"
     }
 
@@ -457,7 +457,7 @@ def test_create_event_with_auth_and_no_provided_id(client, monkeypatch):
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
-        "timestamp": 3471698180
+        "timestamp": 1737250585
     }
 
     response = client.post('/api/v1/events', json=body)
@@ -468,7 +468,7 @@ def test_create_event_with_auth_and_invalid_id(client, monkeypatch):
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
-        "timestamp": 3471698180,
+        "timestamp": 1737250585,
         "id": 12
     }
 
@@ -492,7 +492,7 @@ def test_create_event_with_auth_and_valid_data_and_fail_to_connect_with_recipes(
     monkeypatch.setattr('flaskr.controller.service.firebase.put', put_stub)
 
     body = {
-        "timestamp": 3471698180,
+        "timestamp": 1737250585,
         "id": "1"
     }
 
@@ -543,7 +543,7 @@ def test_update_event_with_auth_and_valid_data_timestamp(client, monkeypatch):
     monkeypatch.setattr('flaskr.controller.service.firebase.put', put_stub)
 
     body = {
-        "timestamp": 347169818999,
+        "timestamp": 1737250585,
         "id": "6d0cde4325df4821afd2d71153f4ae06",
         "synced": False
     }
@@ -563,7 +563,7 @@ def test_update_event_with_auth_and_valid_data_synced_and_logged_in_google(clien
                 "id": "6d0cde4325df4821afd2d71153f4ae06",
                 "recipe": "1",
                 "synced": False,
-                "timestamp": 3471698180
+                "timestamp": 1737250585
             },
             {
                 "id": "612dd6ffb76744a2951ca14e0755d7d7",
@@ -604,7 +604,7 @@ def test_update_event_with_auth_and_valid_data_synced_and_logged_in_google(clien
     monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
 
     body = {
-        "timestamp": 3471698180,
+        "timestamp": 1737250585,
         "id": "6d0cde4325df4821afd2d71153f4ae06",
         "synced": True
     }
@@ -655,7 +655,7 @@ def test_update_event_with_auth_and_valid_data_synced_and_not_logged_in_google(c
     monkeypatch.setattr('flaskr.controller.service.insert_event_in_google_calendar', service_stub)
 
     body = {
-        "timestamp": 3471698180,
+        "timestamp": 1737250585,
         "id": "6d0cde4325df4821afd2d71153f4ae06",
         "synced": True
     }
@@ -706,7 +706,7 @@ def test_update_event_with_auth_and_valid_data_synced_for_event_synced(client, m
     monkeypatch.setattr('flaskr.controller.service.insert_event_in_google_calendar', service_stub)
 
     body = {
-        "timestamp": 3471698180,
+        "timestamp": 1737250585,
         "id": "6d0cde4325df4821afd2d71153f4ae06",
         "synced": True
     }
@@ -757,7 +757,7 @@ def test_update_event_with_auth_and_valid_data_synced_for_non_exists_event(clien
     monkeypatch.setattr('flaskr.controller.service.insert_event_in_google_calendar', service_stub)
 
     body = {
-        "timestamp": 3471698180,
+        "timestamp": 1737250585,
         "id": "inventedid",
         "synced": True
     }
@@ -770,7 +770,7 @@ def test_update_event_with_auth_and_no_event_id_provided(client):
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
-        "timestamp": 3471698180,
+        "timestamp": 1737250585,
         "synced": True
     }
 
@@ -782,7 +782,7 @@ def test_update_event_with_auth_and_id_no_valid(client):
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
-        "timestamp": 3471698180,
+        "timestamp": 1737250585,
         "id": 12123,
         "synced": True
     }
@@ -795,7 +795,7 @@ def test_update_event_with_auth_and_no_synced_provided(client):
     client.set_cookie('localhost', 'authToken', token)
 
     body = {
-        "timestamp": 3471698180,
+        "timestamp": 1737250585,
         "id": "6d0cde4325df4821afd2d71153f4ae06"
     }
 
@@ -807,7 +807,7 @@ def test_update_event_with_auth_and_synced_no_boolean(client):
     client.set_cookie('localhost', 'authToken', token)
 
     body = {    
-        "timestamp": 3471698180,
+        "timestamp": 1737250585,
         "id": "6d0cde4325df4821afd2d71153f4ae06",
         "synced": "true"
     }
@@ -858,7 +858,7 @@ def test_update_event_with_auth_and_valid_data_synced_and_logged_in_google_and_f
     monkeypatch.setattr('flaskr.controller.service.insert_event_in_google_calendar', service_stub)
 
     body = {
-        "timestamp": 3471698180,
+        "timestamp": 1737250585,
         "id": "6d0cde4325df4821afd2d71153f4ae06",
         "synced": True
     }

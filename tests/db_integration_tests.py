@@ -33,7 +33,7 @@ def test_post_in_db(client, monkeypatch):
     monkeypatch.setattr('flaskr.controller.service.utils.communicate', recipes_stub)
 
     body = {
-        "timestamp": 3471698180,
+        "timestamp": 1737250585,
         "id": "1"
     }
 
@@ -78,7 +78,7 @@ def test_put_in_db(client, monkeypatch):
     id = test_events['events'][0]["id"]
 
     body = {
-        "timestamp": 1736526673,
+        "timestamp": 1737250585,
         "id": id,
         "synced": False
     }
