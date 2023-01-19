@@ -19,6 +19,9 @@ def validate_event(event, method):
             return False, "Timestamp must be an integer"
         if int(event["timestamp"]) < int(time.time()):
             return False, "Date is in the past"
+        year = int(time.strftime('%Y', time.localtime(event["timestamp"])))
+        if year > int(time.strftime('%Y', time.localtime(time.time()))) + 5:
+            return False, "Date is more than 5 years in the future"
 
     if method == "POST":
         if "id" not in event:
