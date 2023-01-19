@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: planner
+  labels:
+    {{- include "planner.labels" . | nindent 4 }}
+    app.kubernetes.io/component: planner
+spec:
+  replicas: {{ .Values.planner.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: planner
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: planner
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+        - name: planner
+          image: {{ .Values.planner.image }}
+          env:
+            - name: DATABASE_URL
+              value: {{ .Values.planner.databaseUrl }}
+            - name: JWT_SECRET
+              value: {{ .Values.planner.jwtSecret }}
+            - name: CLIENT_SECRET
+              value: {{ .Values.planner.clientSecret }}
+            - name: CLIENT_ID
+              value: {{ .Values.planner.clientId }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 1
+            httpGet:
+              path: /
+              port: 80
+          livenessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 1
+            httpGet:
+              path: /
+              port: 80

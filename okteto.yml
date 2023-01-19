@@ -1,0 +1,17 @@
+build:
+  planner:
+    context: .
+
+deploy:
+  - helm upgrade --install planner chart
+    --set planner.image=${OKTETO_BUILD_PLANNER_IMAGE}
+    --set planner.databaseUrl=${DATABASE_URL}
+    --set planner.jwtSecret=${JWT_SECRET}
+    --set planner.clientId=${CLIENT_ID}
+    --set planner.clientSecret=${CLIENT_SECRET}
+
+dev:
+  planner:
+    command: ["flask", "--app", "flaskr", "run"]
+    sync:
+      - .:/app

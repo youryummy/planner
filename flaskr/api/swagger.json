@@ -1,0 +1,283 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "version": "1.0.0",
+    "title": "Planner Service",
+    "description": "YourYummy user planner service"
+  },
+  "paths": {
+    "/api/v1/events": {
+      "get": {
+        "description": "Returns events by user",
+        "operationId": "findByUser",
+        "responses": {
+          "200": {
+            "description": "Events found by user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/events"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Creates a new event",
+        "operationId": "addEvent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/create-event"
+              }
+            }
+          },
+          "description": "Event to be created",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Event"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Update a event based on its id",
+        "operationId": "updateEvent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/modify-event"
+              }
+            }
+          },
+          "description": "Event to be updated",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Event updated"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/{id}": {
+      "delete": {
+        "description": "Deletes a single event based on its id",
+        "operationId": "deleteEvent",
+        "parameters": [
+          {
+            "required": true,
+            "name": "id",
+            "description": "id of the event to delete",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Event deleted"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/sync": {
+      "post": {
+        "description": "Connect your YourYummy account with your Google account",
+        "operationId": "sync",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/sync"
+              }
+            }
+          },
+          "description": "Credentials to connect your account",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Login has been completed succesfully"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/logout": {
+      "get": {
+        "description": "Disconnect your YourYummy account with your Google account",
+        "operationId": "googleLogout",
+        "responses": {
+          "200": {
+            "description": "Logout has been completed succesfully"
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "events": {
+        "type": "object",
+        "required": [
+          "isLogged",
+          "events"
+        ],
+        "properties": {
+          "isLogged": {
+            "type": "boolean"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/event"
+            }
+          }
+        }
+      },
+      "event": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "number"
+          },
+          "synced": {
+            "type": "boolean"
+          },
+          "account": {
+            "type": "string"
+          },
+          "recipe": {
+            "type": "object"
+          }
+        }
+      },
+      "create-event": {
+        "type": "object",
+        "required": [
+          "id",
+          "timestamp"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "number"
+          }
+        }
+      },
+      "modify-event": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "number"
+          },
+          "synced": {
+            "type": "boolean"
+          }
+        }
+      },
+      "sync": {
+        "type": "object",
+        "required": [
+          "refreshToken"
+        ],
+        "properties": {
+          "refreshToken": {
+            "type": "string"
+          }
+        }
+      },
+      "error": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}
